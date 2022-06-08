@@ -1,0 +1,88 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: rgb(227, 227, 253);
+}
+
+
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 998;
+    background-color: rgba(76, 0, 255, 0.3);
+}
+
+/* MODAL */
+
+.modal {
+    position: fixed;
+    top: 20%;
+    left: 20%;
+    transform: translate(-20%, -20%);
+    z-index: 999;
+    width: 100%;
+    max-width: 90%;
+    background-color: #fff;
+    border: solid 1px lightgray;
+    border-radius: 4px;
+    padding: 25px;
+
+    .close {
+        display: inline;
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    /* .form {
+        .form-group {
+            color: rgb(85, 85, 85);
+            margin-bottom: 10px;
+
+        }
+
+        input {
+            height: 30px;
+            border: solid 1px grey;
+            border-radius: 5px;
+            
+        }
+
+        label {
+            display: block;
+        }
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            outline: none;
+        }
+        .w-50 {
+            width: 50%;
+        }
+
+        
+    } */
+}
+
+/* 
+    fade classes are defined by the "name"property in transition tag
+*/
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave {
+    opacity: 0;
+}
+
+/* END MODAL */
