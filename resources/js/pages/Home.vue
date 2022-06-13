@@ -80,7 +80,10 @@ import Stage from './components/Stage.vue';
         mounted() {
             this.getStages();
             this.getJobs();
-            
+            window.Echo.channel('jobChannel')
+                .listen('Job', (e) => {
+                    console.log(e);
+                })
         }
         
     }
