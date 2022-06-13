@@ -34,8 +34,8 @@
             <textarea v-model="form.description" name="description" id="" cols="30" rows="10"></textarea>
         </div>
 
-        <button v-if="updateJobFlag" @click="updateJob">Modifica</button>
         <button v-if="newJobFlag" @click="saveJob">Salva</button>
+        <button v-else @click="updateJob">Modifica</button>
         
     </div>
 
@@ -43,15 +43,16 @@
 
 <script>
 export default {
-    name: 'Form',
+    name: 'Modal',
     props: {
-        form: Object,
-        updateJobFlag: Boolean,
         newJobFlag: Boolean,
+        job:Object,
+        stage_id: Number,
+        
     },
     data () {
         return {
-             /* form: {
+            form: {
                     company: "",
                     stage_id: this.stage_id,
                     title:"",
@@ -59,42 +60,44 @@ export default {
                     salary: "",
                     location: "",
                     description: "",
-                    counter: 1,
-
-                }, */
+                    
+            },
         }
     },
-    methods:{
+    methods: {
+        closeModal() {
+            this.$emit('toggleModal');
+        },
+        fillForm() {
+            if(this.job) {
+                this.form = this.job;
+            }
+        },
         saveJob() {
-            axios.post("/api/job", this.form)
-            .then(response => {
+                axios.post("/api/job", this.form)
+                .then(response => {
 
-                console.log(response);
-                /* this.modalControl(); */
-                /* this.updateJobFlag = false;
-                this.newJobFlag = false; */
-                this.$emit('updateJobFlag', false);
-                this.$emit('newJobFlag', false);
-
-            })
-            .catch(error => {
-                console.log(error);
-            });
-            
+                    this.closeModal()
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+                
         },
         updateJob() {
             axios.patch("/api/job", this.form)
             .then(response => {
-                /* this.modalControl(); */
-                /* this.updateJobFlag = false; */
-                this.$emit('updateJobFlag', false);
+                this.closeModal()
             })
             .catch(error => {
                 console.log(error);
             });
             
-        },
+        }
     },
+    mounted() {
+        this.fillForm()
+    }
     
 }
 </script>

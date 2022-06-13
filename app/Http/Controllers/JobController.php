@@ -33,6 +33,9 @@ class JobController extends Controller
     }
 
     public function delete(Job $job) {
-        dd($job);
+        $job->delete();
+        return response()->json([
+            'message' => 'Job deleted.'
+        ]);
     }
 }

@@ -1,11 +1,12 @@
 <template>
-    <div>
-
-        <div class="card" @click="updateModal = true">
+<div>
+    <div class="card">
+        <div class="delete" @click="deleteJob = true">
+            <i class="bi bi-trash"></i>
+        </div>
+        <div class="card-body" @click="updateModal = true">
             <div class="header">
-                <div class="delete">
-                    <i class="bi bi-trash"></i>
-                </div>
+                
                 <div class="title">
                     {{job.title}}
                 </div>
@@ -18,12 +19,21 @@
             
         </div>
 
-        <Modal 
-        v-if="updateModal"
-        v-bind:job="this.job"
-        @toggleModal="listenModal"
-        />
     </div>
+    <Modal
+    v-if="updateModal"
+    v-bind:job="this.job"
+    @toggleModal="listenModal"
+    />
+
+    <Modal
+    v-if="deleteJob"
+    v-bind:deleteJob="deleteJob"
+    v-bind:job="this.job"
+    @toggleModal="listenModal"
+    />
+    
+</div>
 </template>
 
 <script>
@@ -40,6 +50,7 @@ import Modal from './Modal.vue'
         data () {
             return {
                 updateModal: false,
+                deleteJob: false
             }
         },
         methods: {
@@ -47,17 +58,14 @@ import Modal from './Modal.vue'
                 console.log(stuff);
             },
             listenModal() {
-                this.updateModal = false;
+                if(this.updateModal) {
+                    this.updateModal = false;
+                }
+                if(this.deleteJob) {
+                    this.deleteJob = false;
+                }
             },
-            deleteJob() {
-                axios.delete('/api/job/' + this.job.id)
-                .then((res) => {
-                    console.log(res);
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-            }
+           
         },
         mounted() {
             
@@ -78,17 +86,20 @@ import Modal from './Modal.vue'
             position: absolute;
             top:10px;
             right: 10px;
-            z-index: 9;
+            z-index: 99;
+
         }
-        .title {
-            font-size: 2.3em;
-            color: white;
+        .card-body {
+            .title {
+                font-size: 2.3em;
+                color: white;
+            }
+            .company {
+                font-size: 1.2em;
+                color: lightgray;
+            }
+            
         }
-        .company {
-            font-size: 1.2em;
-            color: lightgray;
-        }
-        
         &:hover {
             cursor: pointer;
         }

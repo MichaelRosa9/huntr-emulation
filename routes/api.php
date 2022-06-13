@@ -25,4 +25,4 @@ Route::get('/stage', [StageController::class, 'index']);
 Route::get('/job', [JobController::class, 'index']);
 Route::post('/job', [JobController::class, 'store']);
 Route::patch('/job', [JobController::class, 'update']);
-Route::delete('/job', [JobController::class, 'delete']);
+Route::delete('/job/{job}', [JobController::class, 'delete']);
