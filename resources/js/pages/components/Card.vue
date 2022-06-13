@@ -1,8 +1,9 @@
 <template>
     <div>
-        <div class="card">
+
+        <div class="card" @click="updateModal = true">
             <div class="header">
-                <div class="delete" @click="this.updateJobFlag = false;">
+                <div class="delete">
                     <i class="bi bi-trash"></i>
                 </div>
                 <div class="title">
@@ -17,18 +18,36 @@
             
         </div>
 
+        <Modal 
+        v-if="updateModal"
+        v-bind:job="this.job"
+        @toggleModal="listenModal"
+        />
     </div>
 </template>
 
 <script>
+import Modal from './Modal.vue'
     export default {
         name: 'Card',
+        components: {
+            Modal
+        },
         props: {
             job:Object,
+            showModal: Boolean
+        },
+        data () {
+            return {
+                updateModal: false,
+            }
         },
         methods: {
             logStuff(stuff) {
                 console.log(stuff);
+            },
+            listenModal() {
+                this.updateModal = false;
             },
             deleteJob() {
                 axios.delete('/api/job/' + this.job.id)
