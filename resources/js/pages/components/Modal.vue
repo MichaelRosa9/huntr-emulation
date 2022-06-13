@@ -14,6 +14,7 @@
             <div v-if="this.deleteJob">
                 <Delete 
                 v-bind:job="this.job"
+                @toggleModal="closeModal"
                 />
             </div>
             <div v-else>

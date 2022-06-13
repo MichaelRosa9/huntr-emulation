@@ -81,8 +81,12 @@ import Stage from './components/Stage.vue';
             this.getStages();
             this.getJobs();
             window.Echo.channel('jobChannel')
-                .listen('Job', (e) => {
-                    console.log(e);
+                .listen('Job', (event) => {
+                    
+                    if(event.Job){
+                        this.getJobs();
+
+                    }
                 })
         }
         

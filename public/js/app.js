@@ -5440,10 +5440,14 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
+    var _this3 = this;
+
     this.getStages();
     this.getJobs();
-    window.Echo.channel('jobChannel').listen('Job', function (e) {
-      console.log(e);
+    window.Echo.channel('jobChannel').listen('Job', function (event) {
+      if (event.Job) {
+        _this3.getJobs();
+      }
     });
   }
 });
@@ -5589,10 +5593,15 @@ __webpack_require__.r(__webpack_exports__);
     job: Object
   },
   methods: {
+    closeModal: function closeModal() {
+      this.$emit('toggleModal');
+    },
     deleteJob: function deleteJob(job_id) {
+      var _this = this;
+
       console.log(job_id);
       axios["delete"]('/api/job/' + job_id).then(function (res) {
-        return res;
+        _this.closeModal();
       })["catch"](function (error) {
         console.log(error);
       });
@@ -5724,6 +5733,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _JobForm_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./JobForm.vue */ "./resources/js/pages/components/JobForm.vue");
 /* harmony import */ var _DeleteAllert_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DeleteAllert.vue */ "./resources/js/pages/components/DeleteAllert.vue");
+//
 //
 //
 //
@@ -36596,7 +36606,16 @@ var render = function () {
             ]),
             _vm._v(" "),
             this.deleteJob
-              ? _c("div", [_c("Delete", { attrs: { job: this.job } })], 1)
+              ? _c(
+                  "div",
+                  [
+                    _c("Delete", {
+                      attrs: { job: this.job },
+                      on: { toggleModal: _vm.closeModal },
+                    }),
+                  ],
+                  1
+                )
               : _c(
                   "div",
                   [

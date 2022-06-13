@@ -26,7 +26,7 @@ class Job implements ShouldBroadcast
 
     public function broadcastWith() {
         
-        return ['Hello' => 'world'];
+        return ['Job' => 'true'];
     }
     /**
      * Get the channels the event should broadcast on.

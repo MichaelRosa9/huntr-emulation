@@ -17,11 +17,14 @@ export default {
         job: Object
     },
     methods: {
+        closeModal() {
+            this.$emit('toggleModal');
+        },
         deleteJob(job_id) {
             console.log(job_id);
             axios.delete('/api/job/' + job_id)
                 .then((res) => {
-                    return res
+                    this.closeModal();
                 })
                 .catch(error => {
                 console.log(error);
