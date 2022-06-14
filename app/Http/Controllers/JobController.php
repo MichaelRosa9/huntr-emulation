@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\Job as EventsJob;
 use App\Models\Job;
+use App\Models\Stage;
 use Illuminate\Http\Request;
 
 class JobController extends Controller
@@ -35,7 +36,20 @@ class JobController extends Controller
         ]);
     }
 
+    public function updateStage(Request $request, Job $job) {
+        $data = $request->all();
+        $stage= Stage::find($data['id']);
+        $job->stage_id = $stage->id;
+        $job->save();
+        broadcast(new EventsJob);
+
+        return response()->json([
+            'message' => 'Job stage updated.'
+        ]);
+    }
+
     public function delete(Job $job) {
+        
         $job->delete();
         broadcast(new EventsJob);
 

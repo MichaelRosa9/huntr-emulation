@@ -4,7 +4,7 @@
             Sei sicuro di voler eliminare questo lavoro
         </p>
 
-        <div>
+        <div class="text-right">
             <button @click="deleteJob(job.id)"> Elimina</button>
 
         </div>

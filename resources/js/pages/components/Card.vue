@@ -86,7 +86,7 @@ import Modal from './Modal.vue'
             position: absolute;
             top:10px;
             right: 10px;
-            z-index: 99;
+            z-index: 9;
 
         }
         .card-body {

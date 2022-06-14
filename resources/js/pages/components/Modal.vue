@@ -63,7 +63,7 @@ export default {
         
     },
     mounted() {
-        this.logStuff(this.deleteJob);
+        
     }
     
 }
@@ -96,11 +96,11 @@ export default {
             max-width: 90%;
             transform: translate(-20%, -20%); 
         }
-        &modal-sm {
+        &.modal-sm {
             top: 50%;
             left: 50%;
-            width: 100%;
-            max-width: 50%;
+            /* width: 50%;
+            max-width: 50%; */
             transform: translate(-50%, -50%); 
         }
         
