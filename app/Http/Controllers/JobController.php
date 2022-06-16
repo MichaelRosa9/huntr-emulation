@@ -41,7 +41,7 @@ class JobController extends Controller
         $stage= Stage::find($data['id']);
         $job->stage_id = $stage->id;
         $job->save();
-        broadcast(new EventsJob);
+        //broadcast(new EventsJob);
 
         return response()->json([
             'message' => 'Job stage updated.'

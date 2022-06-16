@@ -15,6 +15,6 @@ class Stage extends Model
     ];
 
     public function jobs() {
-        $this->hasMany(Job::class);
+        return $this->hasMany(Job::class);
     }
 }

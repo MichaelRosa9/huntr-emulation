@@ -20,6 +20,6 @@ class Job extends Model
     ];
 
     public function stage() {
-        $this->belongsTo(Job::class);
+        return $this->belongsTo(Job::class);
     }
 }

@@ -5,27 +5,37 @@
         </transition>
         
         <transition name="fade" appear>
+            
             <div :class="[this.deleteJob ? 'modal-sm' : 'modal-lg', 'modal']">
-                <div class="text-right">
+                <div v-if="load">
+                    Loading...
+                </div>
+                <div v-else>
+                    <div class="text-right">
                     <div class="close" @click="closeModal"><i class="bi bi-x-lg"></i></div>
 
                 </div>
 
-            <div v-if="this.deleteJob">
-                <Delete 
-                v-bind:job="this.job"
-                @toggleModal="closeModal"
-                />
-            </div>
-            <div v-else>
-                <Form
-                v-bind:newJobFlag="this.newJobFlag"
-                v-bind:job="this.job"
-                v-bind:stage_id="this.stage_id"
-                @toggleModal="closeModal"
-                />
+                <div v-if="this.deleteJob">
+                    <Delete 
+                    v-bind:job="this.job"
+                    @toggleModal="closeModal"
+                    @getJobs="getJobs"
 
-            </div>
+                    />
+                </div>
+                <div v-else>
+                    <Form
+                    v-bind:newJobFlag="this.newJobFlag"
+                    v-bind:job="this.job"
+                    v-bind:stage_id="this.stage_id"
+                    @toggleModal="closeModal"
+                    @getJobs($event)="getJobs"
+                    />
+
+                </div>
+                </div>
+                
                 
             </div>
         </transition>
@@ -45,7 +55,8 @@ export default {
         newJobFlag: Boolean,
         job:Object,
         stage_id: Number,
-        deleteJob: Boolean
+        deleteJob: Boolean,
+        load: Boolean
         
     },
     data () {
@@ -59,6 +70,10 @@ export default {
         },
         logStuff(stuff) {
             console.log(stuff);
+        },
+        getJobs(evt) {
+            
+            this.$emit('getJobs');
         }
         
     },

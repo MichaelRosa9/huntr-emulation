@@ -1,7 +1,7 @@
 <template>
     <div class="stage">
         <div class="name text-center">
-            {{name}}
+            {{stage.name}}
         </div>
 
         <div :id="this.stage.id" class="body">
@@ -13,12 +13,12 @@
             </div>
 
             <draggable
+                class="list-group"
                 @add="onAdd"
                 :list="arrayList.jobs"
                 group="arrayList"
                 animation="200"
                 :empty-insert-threshold="100"
-                :swapThreshold='100'
                 @change="update($event, arrayList)"
             >
                 <transition-group>
@@ -39,6 +39,7 @@
         v-bind:stage_id="this.stage.id"
         v-bind:newJobFlag="newJobFlag"
         @toggleModal="listenModal"
+        @getJobs="getJobs"
         />
 
     </div>
@@ -105,6 +106,7 @@ import Modal from './Modal.vue'
             axios.patch("/api/jobUpdateStage/"+ job.id, stage)
             .then(response => {
                 console.log(response);
+                this.getJobs();
             })
             .catch(error => {
                 console.log(error);
@@ -114,7 +116,7 @@ import Modal from './Modal.vue'
             update(evt, list) {
                 if(evt.added){
                     let newEvent = {job: evt.added.element, stage: list};
-                    console.log(newEvent.stage.id);
+                    //console.log(newEvent.stage.id);
                     this.updateStage(newEvent.job, newEvent.stage)
                 }
                 if (evt.removed) {
@@ -138,6 +140,9 @@ import Modal from './Modal.vue'
             },
             setList() {
                 this.arrayList.jobs = JSON.parse(JSON.stringify(this.jobs))
+            },
+            getJobs() {
+                this.$emit('getJobs');
             }
             
         },
@@ -147,9 +152,7 @@ import Modal from './Modal.vue'
         },
         
         computed: {
-            checkforJobs() {
-                return this.logStuff(this.arrayList);
-            }
+            
         }
         
     }
@@ -194,81 +197,13 @@ import Modal from './Modal.vue'
             cursor: pointer;
         }
     }
-      
      
-    /* .modal-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        z-index: 998;
-        background-color: rgba(76, 0, 255, 0.3);
-    } */
+ .list-group {
+    & span {
 
-    /* .modal {
-        position: fixed;
-        top: 20%;
-        left: 20%;
-        transform: translate(-20%, -20%);
-        z-index: 999;
-        width: 100%;
-        max-width: 90%;
-        background-color: #fff;
-        border: solid 1px lightgray;
-        border-radius: 4px;
-        padding: 25px;
-
-        .close {
-            display: inline;
-            &:hover {
-                cursor: pointer;
-            }
-        }
-        .form {
-            .form-group {
-                color: rgb(85, 85, 85);
-                margin-bottom: 10px;
-
-            }
-
-            input {
-                height: 30px;
-                border: solid 1px grey;
-                border-radius: 5px;
-                
-            }
-
-            label {
-                display: block;
-            }
-            input,
-            textarea {
-                width: 100%;
-                padding: 10px;
-                outline: none;
-            }
-            .w-50 {
-                width: 50%;
-            }
-
-            
+        height: 300px;
     }
-    } */
-
-    /* 
-        fade classes are defined by the "name"property in transition tag
-    */
-    /* .fade-enter-active,
-    .fade-leave-active {
-        transition: opacity 0.5s;
-    }
-
-    .fade-enter,
-    .fade-leave {
-        opacity: 0;
-    }
- */
+ }
     
 } 
 

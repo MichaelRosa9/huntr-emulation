@@ -31,6 +31,7 @@
     v-bind:deleteJob="deleteJob"
     v-bind:job="this.job"
     @toggleModal="listenModal"
+    getJobs="getJobs"
     />
     
 </div>
@@ -65,6 +66,9 @@ import Modal from './Modal.vue'
                     this.deleteJob = false;
                 }
             },
+            getJobs() {
+                this.$emit('getJobs');
+            }
            
         },
         mounted() {

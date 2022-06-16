@@ -1731,3 +1731,7 @@ body {
   justify-content: space-between;
   align-items: center;
 }
+
+.d-none {
+  display: none;
+}

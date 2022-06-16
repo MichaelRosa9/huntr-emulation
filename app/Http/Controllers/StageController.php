@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 class StageController extends Controller
 {
     public function index() {
-        $stages = Stage::all();
+        $stages = Stage::with('jobs')->get();
+       
         return $stages->toJson();
     }
 }

@@ -1,60 +1,78 @@
 <template>
 <div class="container">
+
     <h1 class="text-center">Job Search</h1>
 
-    <!-- <Stage
-    v-for="stage in stages" :key="stage.id"
-    v-bind:name="stage.name"
-    v-bind:jobs="jobs"
-    v-bind:stage_id="stage.id"
-    
-    /> -->
-<div class="stages-container">
-    <div class="stage-parent" v-for="stage in stages" :key="stage.id">
-        <Stage
-        v-if="jobs.length >0"
-        @getJobs="getJobs"
-        v-bind:name="stage.name"
-        v-bind:list="list[stage.id]"
-        v-bind:jobs="filterJobs(stage.id)"
-        v-bind:stage="stage"
-        @cycleLoop="cycleLoop"
-        />
+    <div :class="[load ? 'd-none': '' ,'stages-container']">
+        <div class="stage-parent" v-for="stage in stages" :key="stage.id">
+            <Stage
+            @getJobs($event)="getStages"
+            v-bind:jobs="stage.jobs"
+            v-bind:stage="stage"
+            />
+           
+
+        </div>
     </div>
-</div>
+
+    <div :class="[load ? '': 'd-none' ,'stages-container']" >
+        <div class="stage-parent" v-for="stage in oldStages" :key="stage.id">
+            <Stage
+            @getJobs($event)="getStages"
+            v-bind:jobs="stage.jobs"
+            v-bind:stage="stage"
+            />
+           
+
+        </div>
+    </div>
+<!-- 
+    <Modal 
+    v-else
+    v-bind:load="load"
+    v-bind:deleteJob="deleteJob"
+    /> -->
 </div>
 
 </template>
 
 <script>
 import Stage from './components/Stage.vue';
+import Modal from './components/Modal.vue';
     export default {
         name:'Home',
         components: {
-          Stage
+          Stage,
+          Modal
         },
         data()  {
             return {
                 stages: [],
+                oldStages: [],
                 showModal:false,
                 jobs:[],
-                list:[]
+                load: false,
+                deleteJob: false
             }
         },
         methods: {
-            cycleLoop() {
-                /* console.log('ciao'); */
-                
-            },
-            getStages() {
+           loading() {
+            console.log('loading');
+            this.load = false;
+           },
+            getStages(evt) {
+                //this.load = true;
+                if(!isNaN(evt)) {
+                    this.deleteJob = true;
+                }
+                this.oldStages = this.stages;
+                this.stages = [];
                 axios.get('/api/stage')
                 .then((res) => {
                    
                     this.stages = res.data;
-                    this.stages.forEach(stage => {
-                        return this.list.push('list-' + stage.id);
-                        
-                    });
+                    setTimeout(() => {this.load = false}, 2000);
+                   
                     
                 })
                 .catch((err) => {
@@ -72,39 +90,25 @@ import Stage from './components/Stage.vue';
                     console.log(err);
                 })
             },
-            filterJobs(stage_id) {
-                
-                let filtered_jobs = this.jobs.filter(job => {
-                    return job.stage_id == stage_id;
-                });
-               
-               return filtered_jobs;
-                /* return filtered_jobs.filter(job => {
-                    return job.stage_id == stage_id;
-                }); */
-            },
             logStuff(stuff) {
                 console.log(stuff);
             }
             
         },
         mounted() {
-            this.getStages();
-            this.getJobs();
             
+            this.getStages();
+            
+            window.Echo.channel('jobChannel')
+                .listen('Job', (event) => {
+                    if(event.Job){
+                        this.getStages();
+                       
+                    }
+                })
         },
         computed: {
-            jobsLookOut () {
-                window.Echo.channel('jobChannel')
-                    .listen('Job', (event) => {
-                        if(event.Job){
-                            console.log(event);
-                            this.getJobs();
-    
-                        }
-                    })
-
-            }
+            
         }
         
     }
@@ -129,6 +133,7 @@ import Stage from './components/Stage.vue';
         margin-left: 5px;
         width: calc((100% / 4) - 10px);
     }
+    
 }
 
 

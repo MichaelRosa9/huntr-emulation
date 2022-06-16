@@ -3,12 +3,12 @@
         <div class="d-flex-justify-between form-group">
             <div style="width: 33%;">
                 <label for="title">Ruolo</label>
-                <input v-model="form.title" name="title" type="text" placeholder="Inserisci ruolo">
+                <input v-model="form.title" name="title" type="text" placeholder="Inserisci ruolo" required>
 
             </div>
             <div style="width: 33%;">
                 <label for="company">Azienda</label>
-                <input v-model="form.company" name="company" type="text" placeholder="Inserisci azienda">
+                <input v-model="form.company" name="company" type="text" placeholder="Inserisci azienda" required>
 
             </div>
 
@@ -31,7 +31,7 @@
 
         <div class="form-group">
             <label for="description">Desrizione</label>
-            <textarea v-model="form.description" name="description" id="" cols="30" rows="10"></textarea>
+            <textarea v-model="form.description" name="description" id="" cols="30" rows="10" required></textarea>
         </div>
 
         <button v-if="newJobFlag" @click="saveJob">Salva</button>
@@ -77,7 +77,8 @@ export default {
                 axios.post("/api/job", this.form)
                 .then(response => {
 
-                    this.closeModal()
+                    this.$emit('getJobs');
+                    this.closeModal();
                 })
                 .catch(error => {
                     console.log(error);
@@ -87,7 +88,8 @@ export default {
         updateJob() {
             axios.patch("/api/job", this.form)
             .then(response => {
-                this.closeModal()
+                this.$emit('getJob');
+                this.closeModal();
             })
             .catch(error => {
                 console.log(error);

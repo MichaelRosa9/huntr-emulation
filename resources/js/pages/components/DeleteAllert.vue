@@ -18,12 +18,13 @@ export default {
     },
     methods: {
         closeModal() {
-            this.$emit('toggleModal');
+            this.$emit('toggleModal', 'delete');
         },
         deleteJob(job_id) {
             console.log(job_id);
             axios.delete('/api/job/' + job_id)
                 .then((res) => {
+                    this.$emit('getJobs');
                     this.closeModal();
                 })
                 .catch(error => {

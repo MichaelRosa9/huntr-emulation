@@ -5369,6 +5369,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _components_Stage_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/Stage.vue */ "./resources/js/pages/components/Stage.vue");
+/* harmony import */ var _components_Modal_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/Modal.vue */ "./resources/js/pages/components/Modal.vue");
 //
 //
 //
@@ -5397,33 +5398,54 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'Home',
   components: {
-    Stage: _components_Stage_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+    Stage: _components_Stage_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
+    Modal: _components_Modal_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   data: function data() {
     return {
       stages: [],
+      oldStages: [],
       showModal: false,
       jobs: [],
-      list: []
+      load: false,
+      deleteJob: false
     };
   },
   methods: {
-    cycleLoop: function cycleLoop() {
-      /* console.log('ciao'); */
+    loading: function loading() {
+      console.log('loading');
+      this.load = false;
     },
-    getStages: function getStages() {
+    getStages: function getStages(evt) {
       var _this = this;
 
+      //this.load = true;
+      if (!isNaN(evt)) {
+        this.deleteJob = true;
+      }
+
+      this.oldStages = this.stages;
+      this.stages = [];
       axios.get('/api/stage').then(function (res) {
         _this.stages = res.data;
-
-        _this.stages.forEach(function (stage) {
-          return _this.list.push('list-' + stage.id);
-        });
+        setTimeout(function () {
+          _this.load = false;
+        }, 2000);
       })["catch"](function (err) {
         console.log(err);
       });
@@ -5437,36 +5459,21 @@ __webpack_require__.r(__webpack_exports__);
         console.log(err);
       });
     },
-    filterJobs: function filterJobs(stage_id) {
-      var filtered_jobs = this.jobs.filter(function (job) {
-        return job.stage_id == stage_id;
-      });
-      return filtered_jobs;
-      /* return filtered_jobs.filter(job => {
-          return job.stage_id == stage_id;
-      }); */
-    },
     logStuff: function logStuff(stuff) {
       console.log(stuff);
     }
   },
   mounted: function mounted() {
+    var _this3 = this;
+
     this.getStages();
-    this.getJobs();
+    window.Echo.channel('jobChannel').listen('Job', function (event) {
+      if (event.Job) {
+        _this3.getStages();
+      }
+    });
   },
-  computed: {
-    jobsLookOut: function jobsLookOut() {
-      var _this3 = this;
-
-      window.Echo.channel('jobChannel').listen('Job', function (event) {
-        if (event.Job) {
-          console.log(event);
-
-          _this3.getJobs();
-        }
-      });
-    }
-  }
+  computed: {}
 });
 
 /***/ }),
@@ -5546,6 +5553,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'Card',
@@ -5574,6 +5582,9 @@ __webpack_require__.r(__webpack_exports__);
       if (this.deleteJob) {
         this.deleteJob = false;
       }
+    },
+    getJobs: function getJobs() {
+      this.$emit('getJobs');
     }
   },
   mounted: function mounted() {}
@@ -5611,13 +5622,15 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     closeModal: function closeModal() {
-      this.$emit('toggleModal');
+      this.$emit('toggleModal', 'delete');
     },
     deleteJob: function deleteJob(job_id) {
       var _this = this;
 
       console.log(job_id);
       axios["delete"]('/api/job/' + job_id).then(function (res) {
+        _this.$emit('getJobs');
+
         _this.closeModal();
       })["catch"](function (error) {
         console.log(error);
@@ -5715,6 +5728,8 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       axios.post("/api/job", this.form).then(function (response) {
+        _this.$emit('getJobs');
+
         _this.closeModal();
       })["catch"](function (error) {
         console.log(error);
@@ -5724,6 +5739,8 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       axios.patch("/api/job", this.form).then(function (response) {
+        _this2.$emit('getJob');
+
         _this2.closeModal();
       })["catch"](function (error) {
         console.log(error);
@@ -5784,6 +5801,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -5796,7 +5823,8 @@ __webpack_require__.r(__webpack_exports__);
     newJobFlag: Boolean,
     job: Object,
     stage_id: Number,
-    deleteJob: Boolean
+    deleteJob: Boolean,
+    load: Boolean
   },
   data: function data() {
     return {};
@@ -5807,6 +5835,9 @@ __webpack_require__.r(__webpack_exports__);
     },
     logStuff: function logStuff(stuff) {
       console.log(stuff);
+    },
+    getJobs: function getJobs(evt) {
+      this.$emit('getJobs');
     }
   },
   mounted: function mounted() {}
@@ -5829,6 +5860,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuedraggable__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vuedraggable__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _Card_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Card.vue */ "./resources/js/pages/components/Card.vue");
 /* harmony import */ var _Modal_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Modal.vue */ "./resources/js/pages/components/Modal.vue");
+//
 //
 //
 //
@@ -5924,8 +5956,12 @@ __webpack_require__.r(__webpack_exports__);
       this.oldStage = old;
     },
     updateStage: function updateStage(job, stage) {
+      var _this = this;
+
       axios.patch("/api/jobUpdateStage/" + job.id, stage).then(function (response) {
         console.log(response);
+
+        _this.getJobs();
       })["catch"](function (error) {
         console.log(error);
       });
@@ -5935,8 +5971,8 @@ __webpack_require__.r(__webpack_exports__);
         var newEvent = {
           job: evt.added.element,
           stage: list
-        };
-        console.log(newEvent.stage.id);
+        }; //console.log(newEvent.stage.id);
+
         this.updateStage(newEvent.job, newEvent.stage);
       }
 
@@ -5960,16 +5996,15 @@ __webpack_require__.r(__webpack_exports__);
     },
     setList: function setList() {
       this.arrayList.jobs = JSON.parse(JSON.stringify(this.jobs));
+    },
+    getJobs: function getJobs() {
+      this.$emit('getJobs');
     }
   },
   mounted: function mounted() {
     this.setList();
   },
-  computed: {
-    checkforJobs: function checkforJobs() {
-      return this.logStuff(this.arrayList);
-    }
-  }
+  computed: {}
 });
 
 /***/ }),
@@ -12776,7 +12811,7 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_
 ___CSS_LOADER_EXPORT___.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Nunito);"]);
 ___CSS_LOADER_EXPORT___.i(_node_modules_laravel_mix_node_modules_css_loader_dist_cjs_js_clonedRuleSet_12_0_rules_0_use_1_node_modules_bootstrap_icons_font_bootstrap_icons_css__WEBPACK_IMPORTED_MODULE_1__["default"]);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "/* @import '~bootstrap/scss/bootstrap'; */\n* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\nbody {\n  background-color: rgb(227, 227, 253);\n}\n\n/* MODAL */\n/* END MODAL */\n.text-center {\n  text-align: center;\n}\n.text-right {\n  text-align: right;\n}\n.d-flex-justify-between {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.container {\n  width: 90%;\n  margin: auto;\n}\n.stages-container {\n  display: flex;\n  justify-content: space-evenly;\n}\n.stages-container .stage-parent {\n  margin-right: 5px;\n  margin-left: 5px;\n  width: calc(25% - 10px);\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "/* @import '~bootstrap/scss/bootstrap'; */\n* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\nbody {\n  background-color: rgb(227, 227, 253);\n}\n\n/* MODAL */\n/* END MODAL */\n.text-center {\n  text-align: center;\n}\n.text-right {\n  text-align: right;\n}\n.d-flex-justify-between {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n.d-none {\n  display: none;\n}\n.container {\n  width: 90%;\n  margin: auto;\n}\n.stages-container {\n  display: flex;\n  justify-content: space-evenly;\n}\n.stages-container .stage-parent {\n  margin-right: 5px;\n  margin-left: 5px;\n  width: calc(25% - 10px);\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -12872,7 +12907,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_laravel_mix_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".stage[data-v-4f536d8e] {\n  display: inline-block;\n  width: 100%;\n  height: 80vh;\n  padding: 5px;\n  background-color: aliceblue;\n  border-radius: 10px;\n  border: solid 1px lightgray;\n  /* .modal-overlay {\n      position: absolute;\n      top: 0;\n      left: 0;\n      bottom: 0;\n      right: 0;\n      z-index: 998;\n      background-color: rgba(76, 0, 255, 0.3);\n  } */\n  /* .modal {\n      position: fixed;\n      top: 20%;\n      left: 20%;\n      transform: translate(-20%, -20%);\n      z-index: 999;\n      width: 100%;\n      max-width: 90%;\n      background-color: #fff;\n      border: solid 1px lightgray;\n      border-radius: 4px;\n      padding: 25px;\n\n      .close {\n          display: inline;\n          &:hover {\n              cursor: pointer;\n          }\n      }\n      .form {\n          .form-group {\n              color: rgb(85, 85, 85);\n              margin-bottom: 10px;\n\n          }\n\n          input {\n              height: 30px;\n              border: solid 1px grey;\n              border-radius: 5px;\n\n          }\n\n          label {\n              display: block;\n          }\n          input,\n          textarea {\n              width: 100%;\n              padding: 10px;\n              outline: none;\n          }\n          .w-50 {\n              width: 50%;\n          }\n\n\n  }\n  } */\n  /* \n      fade classes are defined by the \"name\"property in transition tag\n  */\n  /* .fade-enter-active,\n     .fade-leave-active {\n         transition: opacity 0.5s;\n     }\n\n     .fade-enter,\n     .fade-leave {\n         opacity: 0;\n     }\n  */\n}\n.stage .name[data-v-4f536d8e] {\n  width: 80%;\n  margin: 0 auto 20px;\n  font-size: 2em;\n  transition: 0.7s;\n}\n.stage .name[data-v-4f536d8e]:hover {\n  background-color: rgba(202, 202, 202, 0.5);\n  cursor: pointer;\n}\n.stage .add-job[data-v-4f536d8e] {\n  margin-bottom: 20px;\n  border: solid 1px lightgrey;\n  border-radius: 3px;\n  height: 30px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  color: grey;\n  transition: 0.5s;\n}\n.stage .add-job[data-v-4f536d8e]:hover {\n  box-shadow: lightgrey 1px 1px 0.5px;\n  cursor: pointer;\n}\n.on-drag[data-v-4f536d8e] {\n  background-color: grey;\n  color: black;\n}\n.display-none[data-v-4f536d8e] {\n  display: none;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".stage[data-v-4f536d8e] {\n  display: inline-block;\n  width: 100%;\n  height: 80vh;\n  padding: 5px;\n  background-color: aliceblue;\n  border-radius: 10px;\n  border: solid 1px lightgray;\n}\n.stage .name[data-v-4f536d8e] {\n  width: 80%;\n  margin: 0 auto 20px;\n  font-size: 2em;\n  transition: 0.7s;\n}\n.stage .name[data-v-4f536d8e]:hover {\n  background-color: rgba(202, 202, 202, 0.5);\n  cursor: pointer;\n}\n.stage .add-job[data-v-4f536d8e] {\n  margin-bottom: 20px;\n  border: solid 1px lightgrey;\n  border-radius: 3px;\n  height: 30px;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  color: grey;\n  transition: 0.5s;\n}\n.stage .add-job[data-v-4f536d8e]:hover {\n  box-shadow: lightgrey 1px 1px 0.5px;\n  cursor: pointer;\n}\n.stage .list-group span[data-v-4f536d8e] {\n  height: 300px;\n}\n.on-drag[data-v-4f536d8e] {\n  background-color: grey;\n  color: black;\n}\n.display-none[data-v-4f536d8e] {\n  display: none;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -39976,23 +40011,35 @@ var render = function () {
     _vm._v(" "),
     _c(
       "div",
-      { staticClass: "stages-container" },
+      { class: [_vm.load ? "d-none" : "", "stages-container"] },
       _vm._l(_vm.stages, function (stage) {
         return _c(
           "div",
           { key: stage.id, staticClass: "stage-parent" },
           [
-            _vm.jobs.length > 0
-              ? _c("Stage", {
-                  attrs: {
-                    name: stage.name,
-                    list: _vm.list[stage.id],
-                    jobs: _vm.filterJobs(stage.id),
-                    stage: stage,
-                  },
-                  on: { getJobs: _vm.getJobs, cycleLoop: _vm.cycleLoop },
-                })
-              : _vm._e(),
+            _c("Stage", {
+              attrs: { jobs: stage.jobs, stage: stage },
+              on: { "getJobs($event)": _vm.getStages },
+            }),
+          ],
+          1
+        )
+      }),
+      0
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { class: [_vm.load ? "" : "d-none", "stages-container"] },
+      _vm._l(_vm.oldStages, function (stage) {
+        return _c(
+          "div",
+          { key: stage.id, staticClass: "stage-parent" },
+          [
+            _c("Stage", {
+              attrs: { jobs: stage.jobs, stage: stage },
+              on: { "getJobs($event)": _vm.getStages },
+            }),
           ],
           1
         )
@@ -40107,7 +40154,11 @@ var render = function () {
       _vm._v(" "),
       _vm.deleteJob
         ? _c("Modal", {
-            attrs: { deleteJob: _vm.deleteJob, job: this.job },
+            attrs: {
+              deleteJob: _vm.deleteJob,
+              job: this.job,
+              getJobs: "getJobs",
+            },
             on: { toggleModal: _vm.listenModal },
           })
         : _vm._e(),
@@ -40199,6 +40250,7 @@ var render = function () {
             name: "title",
             type: "text",
             placeholder: "Inserisci ruolo",
+            required: "",
           },
           domProps: { value: _vm.form.title },
           on: {
@@ -40228,6 +40280,7 @@ var render = function () {
             name: "company",
             type: "text",
             placeholder: "Inserisci azienda",
+            required: "",
           },
           domProps: { value: _vm.form.company },
           on: {
@@ -40337,7 +40390,13 @@ var render = function () {
             expression: "form.description",
           },
         ],
-        attrs: { name: "description", id: "", cols: "30", rows: "10" },
+        attrs: {
+          name: "description",
+          id: "",
+          cols: "30",
+          rows: "10",
+          required: "",
+        },
         domProps: { value: _vm.form.description },
         on: {
           input: function ($event) {
@@ -40393,39 +40452,51 @@ var render = function () {
           "div",
           { class: [this.deleteJob ? "modal-sm" : "modal-lg", "modal"] },
           [
-            _c("div", { staticClass: "text-right" }, [
-              _c(
-                "div",
-                { staticClass: "close", on: { click: _vm.closeModal } },
-                [_c("i", { staticClass: "bi bi-x-lg" })]
-              ),
-            ]),
-            _vm._v(" "),
-            this.deleteJob
-              ? _c(
-                  "div",
-                  [
-                    _c("Delete", {
-                      attrs: { job: this.job },
-                      on: { toggleModal: _vm.closeModal },
-                    }),
-                  ],
-                  1
-                )
-              : _c(
-                  "div",
-                  [
-                    _c("Form", {
-                      attrs: {
-                        newJobFlag: this.newJobFlag,
-                        job: this.job,
-                        stage_id: this.stage_id,
-                      },
-                      on: { toggleModal: _vm.closeModal },
-                    }),
-                  ],
-                  1
-                ),
+            _vm.load
+              ? _c("div", [
+                  _vm._v("\n                Loading...\n            "),
+                ])
+              : _c("div", [
+                  _c("div", { staticClass: "text-right" }, [
+                    _c(
+                      "div",
+                      { staticClass: "close", on: { click: _vm.closeModal } },
+                      [_c("i", { staticClass: "bi bi-x-lg" })]
+                    ),
+                  ]),
+                  _vm._v(" "),
+                  this.deleteJob
+                    ? _c(
+                        "div",
+                        [
+                          _c("Delete", {
+                            attrs: { job: this.job },
+                            on: {
+                              toggleModal: _vm.closeModal,
+                              getJobs: _vm.getJobs,
+                            },
+                          }),
+                        ],
+                        1
+                      )
+                    : _c(
+                        "div",
+                        [
+                          _c("Form", {
+                            attrs: {
+                              newJobFlag: this.newJobFlag,
+                              job: this.job,
+                              stage_id: this.stage_id,
+                            },
+                            on: {
+                              toggleModal: _vm.closeModal,
+                              "getJobs($event)": _vm.getJobs,
+                            },
+                          }),
+                        ],
+                        1
+                      ),
+                ]),
           ]
         ),
       ]),
@@ -40461,7 +40532,7 @@ var render = function () {
     { staticClass: "stage" },
     [
       _c("div", { staticClass: "name text-center" }, [
-        _vm._v("\n        " + _vm._s(_vm.name) + "\n    "),
+        _vm._v("\n        " + _vm._s(_vm.stage.name) + "\n    "),
       ]),
       _vm._v(" "),
       _c(
@@ -40484,12 +40555,12 @@ var render = function () {
           _c(
             "draggable",
             {
+              staticClass: "list-group",
               attrs: {
                 list: _vm.arrayList.jobs,
                 group: "arrayList",
                 animation: "200",
                 "empty-insert-threshold": 100,
-                swapThreshold: 100,
               },
               on: {
                 add: _vm.onAdd,
@@ -40519,7 +40590,7 @@ var render = function () {
       _vm.showModal
         ? _c("Modal", {
             attrs: { stage_id: this.stage.id, newJobFlag: _vm.newJobFlag },
-            on: { toggleModal: _vm.listenModal },
+            on: { toggleModal: _vm.listenModal, getJobs: _vm.getJobs },
           })
         : _vm._e(),
     ],
